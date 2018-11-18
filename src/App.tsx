@@ -1,38 +1,57 @@
 import * as React from 'react';
 import Modal from 'react-responsive-modal';
+import * as Webcam from "react-webcam";
 import './App.css';
 import MemeDetail from './components/MemeDetail';
 import MemeList from './components/MemeList';
 import PatrickLogo from './patrick-logo.png';
-
 
 interface IState {
 	currentMeme: any,
 	memes: any[],
 	open: boolean,
 	uploadFileList: any,
+	authenticated: boolean,
+	refCamera: any
 }
 
 class App extends React.Component<{}, IState> {
 	constructor(props: any) {
         super(props)
         this.state = {
+			authenticated: false,
 			currentMeme: {"id":0, "title":"Loading ","url":"","tags":"⚆ _ ⚆","uploaded":"","width":"0","height":"0"},
 			memes: [],
 			open: false,
-			uploadFileList: null
-		}     	
+			refCamera: React.createRef(),
+			uploadFileList: null,
+		}       	
 		this.selectNewMeme = this.selectNewMeme.bind(this)
 		this.fetchMemes = this.fetchMemes.bind(this)
 		this.fetchMemes("")
 		this.handleFileUpload = this.handleFileUpload.bind(this)
 		this.uploadMeme = this.uploadMeme.bind(this)
+		this.authenticate = this.authenticate.bind(this)
 	}
 
 	public render() {
-		const { open } = this.state;
+		const { open, authenticated } = this.state;
 		return (
 		<div>
+
+			{(!authenticated) ?
+				<Modal open={!authenticated} onClose={this.authenticate} closeOnOverlayClick={false} showCloseIcon={false} center={true}>
+					<Webcam
+						audio={false}
+						screenshotFormat="image/jpeg"
+						ref={this.state.refCamera}
+					/>
+					<div className="row nav-row">
+						<div className="btn btn-primary bottom-button" onClick={this.authenticate}>Login</div>
+					</div>
+				</Modal> : ""}
+			{(authenticated) ?
+			<div>
 			<div className="header-wrapper">
 				<div className="container header">
 					<img src={PatrickLogo} height='40'/>&nbsp; My Meme Bank - MSA 2018 &nbsp;
@@ -69,6 +88,8 @@ class App extends React.Component<{}, IState> {
 					<button type="button" className="btn" onClick={this.uploadMeme}>Upload</button>
 				</form>
 			</Modal>
+			</div>
+			: "" }
 		</div>
 		);
 	}
@@ -77,6 +98,11 @@ class App extends React.Component<{}, IState> {
 	// 	alert("Method not implemented")
 	// }
 
+	// Authenticate
+	private authenticate() { 
+		const screenshot = this.state.refCamera.current.getScreenshot();
+	}
+	
 	// Modal open
 	private onOpenModal = () => {
 		this.setState({ open: true });

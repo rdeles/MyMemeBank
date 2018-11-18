@@ -67,6 +67,7 @@ export default class MemeList extends React.Component<IProps, {}> {
     // Search meme by tag
     private searchByTag() {
         const textBox = document.getElementById("search-tag-textbox") as HTMLInputElement
+        
         if (textBox === null) {
             return;
         }
@@ -98,11 +99,11 @@ export default class MemeList extends React.Component<IProps, {}> {
 
     private postAudio(blob:any) {
         let accessToken: any;
-        fetch('https://westus.api.cognitive.microsoft.com/sts/v1.0', {
+        fetch('https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken', {
             headers: {
             'Content-Length': '0',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Ocp-Apim-Subscription-Key': '73b9a9a49eaa43bbb9153724d8c8c7d4'
+            'Ocp-Apim-Subscription-Key': 'dbe4e77e99174aeaa0084a3b5bebcb68'
             },
             method: 'POST'
         }).then((response) => {
@@ -122,13 +123,15 @@ export default class MemeList extends React.Component<IProps, {}> {
                 'Accept': 'application/json',
                 'Authorization': 'Bearer' + accessToken,
                 'Content-Type': 'audio/wav;codec=audio/pcm; samplerate=16000',
-                'Ocp-Apim-Subscription-Key': '73b9a9a49eaa43bbb9153724d8c8c7d4'
+                'Ocp-Apim-Subscription-Key': 'dbe4e77e99174aeaa0084a3b5bebcb68'
             },    
             method: 'POST'
         }).then((res) => {
             return res.json()
         }).then((res: any) => {
             console.log(res)
+            const textBox = document.getElementById("search-tag-textbox") as HTMLInputElement
+            textBox.value = (res.DisplayText as string).slice(0, -1)
         }).catch((error) => {
             console.log("Error", error)
         });
